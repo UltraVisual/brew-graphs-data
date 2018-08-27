@@ -1,0 +1,33 @@
+service: handleRequest
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: eu-west-1
+
+plugins:
+  - serverless-plugin-typescript  
+  - serverless-offline
+
+functions:
+  graphql:
+    handler: src/handler.server
+    events:
+    - http:
+        path: /
+        method: post
+        cors: true
+  playground:
+    handler: src/handler.playground
+    events:
+    - http:
+        path: /
+        method: get
+        cors: true
+
+  insert:
+    handler: src/handler.insert
+    events:
+    - http:
+        path: /data
+        method: post

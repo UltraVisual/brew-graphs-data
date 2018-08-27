@@ -11,6 +11,7 @@ export default `
         battery: Float,
         gravity: Float,
         interval: Float,
-        RSSI: Float
+        RSSI: Float,
+        timeStamp: Float
     }
 `
