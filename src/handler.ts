@@ -6,21 +6,13 @@ import Mongo from './database/mongo';
 
 const mongoDb:Mongo = new Mongo();
 
-const buildResponse = (code:number, message:string) => {
-	return {
-		"statusCode": code,
-		"body": `{ \"result\": \"${ message }\" }`,
-		"isBase64Encoded": false
-	}
-}
-
 const resolvers = {
 	Query: {
 		stats: () => mongoDb.getCollection('stats').then(stats => stats)
 	}
 }
 
-const apolloServer = new ApolloServer({
+const apolloServer:ApolloServer = new ApolloServer({
 	typeDefs: gql(typeDefs),
 	resolvers,
 	playground: {
@@ -28,10 +20,14 @@ const apolloServer = new ApolloServer({
 	}
 })
 
-export const insert:Handler = async (event: any, context: Context, callback: Callback) => {
+export const insert:Handler = async (event: any, context: Context, callback: Callback):Promise<object> => {
 	await mongoDb.insert(JSON.parse(event.body));
 
-	return buildResponse(200, "success");
+	return {
+		"statusCode": 200,
+		"body": `{ \"result\": \"success\" }`,
+		"isBase64Encoded": false
+	};
 }
 
 export const server = apolloServer.createHandler();
