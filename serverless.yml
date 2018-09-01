@@ -3,7 +3,8 @@ service: handleRequest
 provider:
   name: aws
   runtime: nodejs8.10
-  region: eu-west-1
+  region: eu-west-2
+  timeout: 20
 
 plugins:
   - serverless-plugin-typescript  
@@ -17,8 +18,9 @@ functions:
         path: /
         method: post
         cors: true
+
   playground:
-    handler: src/handler.playground
+    handler: src/handler.server
     events:
     - http:
         path: /

@@ -1,33 +1,37 @@
 import { Handler, Context, Callback } from 'aws-lambda';
-import { GraphQLServerLambda } from 'graphql-yoga'
+import { ApolloServer, gql } from 'apollo-server-lambda';
+
 import typeDefs from './database/typeDefs'
 import Mongo from './database/mongo';
-import { IResolvers } from 'graphql-middleware/dist/types';
 
 const mongoDb:Mongo = new Mongo();
 
-const resolvers:IResolvers = {
-	Query: {
-		stats: () => {
-			return new Promise((resolve) => {
-				const connected = () => resolve(mongoDb.getCollection('stats'))
-				
-				mongoDb.connected ? connected() : mongoDb.connect(() => connected());
-			});
-		} 
+const buildResponse = (code:number, message:string) => {
+	return {
+		"statusCode": code,
+		"body": `{ \"result\": \"${ message }\" }`,
+		"isBase64Encoded": false
 	}
 }
 
-const lambda = new GraphQLServerLambda({
-	typeDefs,
-	resolvers
-})
-
-export const insert:Handler = (event: any, context: Context, callback: Callback) => {
-	console.log(event);
-
-	//mongoDb.insert(data);
+const resolvers = {
+	Query: {
+		stats: () => mongoDb.getCollection('stats').then(stats => stats)
+	}
 }
 
-export const server:Handler = lambda.graphqlHandler;
-export const playground:Handler = lambda.playgroundHandler;
+const apolloServer = new ApolloServer({
+	typeDefs: gql(typeDefs),
+	resolvers,
+	playground: {
+		endpoint: '/dev/'
+	}
+})
+
+export const insert:Handler = async (event: any, context: Context, callback: Callback) => {
+	await mongoDb.insert(JSON.parse(event.body));
+
+	return buildResponse(200, "success");
+}
+
+export const server = apolloServer.createHandler();

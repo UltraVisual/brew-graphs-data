@@ -5,7 +5,8 @@
     "lib": [
       "es6",
       "dom",
-      "esnext.asynciterable"
+      "esnext.asynciterable",
+      "es2018.promise"
     ],
     "moduleResolution": "node",
     "rootDir": "./",
@@ -17,6 +18,7 @@
     "strictNullChecks": true,
     "noImplicitReturns": true,
     "preserveConstEnums": true,
+    "experimentalDecorators": true,
     "suppressImplicitAnyIndexErrors": true,
     "forceConsistentCasingInFileNames": true
   },

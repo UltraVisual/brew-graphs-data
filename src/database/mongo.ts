@@ -9,32 +9,44 @@ class Mongo {
 	private _client:MongoClient;
 
 	public get connected() :Boolean {
-		return this._client && this._client.isConnected();
+		return Boolean(this._client) && this._client.isConnected();
 	}
 
-	public connect(cb:Function = () => {}):void {
-		MongoClient.connect(MONGO_URL, { useNewUrlParser: true }, (err:any, client:MongoClient) => {
-			if (err) throw new Error(err);
-	
-			log(chalk.green('Mongo database connection successful'));
-			
-			this._client = client;
-			this._database = this._client.db('brew-data');
+	public connect():Promise<void> {
+		return new Promise((resolve) => {
+			MongoClient.connect(MONGO_URL, { useNewUrlParser: true }, (err:any, client:MongoClient) => {
+				if (err) throw new Error(err);
 
-			cb();
-		})
+				log(chalk.green('Mongo database connection successful'));
+				
+				this._client = client;
+				this._database = this._client.db('brew-data');
+
+				resolve()
+			})
+		});
 	}
 
-	public getCollection(collection:string):Promise<Array<string>> {
-		return this._database.collection(collection).find({}).toArray();
+	public async getCollection(collection:string):Promise<Array<any>> {
+		await this.connect();
+
+		const data = await this._database.collection(collection).find({}).toArray();
+
+		console.log('Data returned:', data);
+
+		return data;
 	}
 
-	public insert(data:any):void {
+	public async insert(data:any):Promise<string> {
+		await this.connect();
+
 		const collection = this._database.collection('stats');
 
 		data.timeStamp = Date.now();
 
-		collection.insertOne(data);
+		await collection.insertOne(data)
+
+		return 'success'
 	}
 }
 
