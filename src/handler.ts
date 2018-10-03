@@ -30,4 +30,7 @@ export const insert:Handler = async (event: any, context: Context, callback: Cal
 	};
 }
 
-export const server = apolloServer.createHandler();
+export const server = apolloServer.createHandler({ cors: {
+	origin: '*',
+    credentials: true,
+}});

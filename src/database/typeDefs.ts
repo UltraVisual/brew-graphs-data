@@ -4,6 +4,7 @@ export default `
     },
     type Stat {
         name: String,
+        _id: String,
         ID: Float,
         token: String,
         angle: Float,

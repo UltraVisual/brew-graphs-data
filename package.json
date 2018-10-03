@@ -6,14 +6,45 @@
   "scripts": {
     "offline": "serverless offline",
     "deploy": "serverless deploy",
-    "test": "./node_modules/.bin/jest"
+    "test": "tsc && ./node_modules/.bin/jest"
   },
   "keywords": [],
   "author": "Shane Johnson",
   "license": "ISC",
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/build/*.js"
+    },
+    "testRegex": "__tests__/.*\\.spec\\.ts$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "__tests__/watch.spec.ts"
+    ],
+    "coverageReporters": [
+      "text"
+    ],
+    "coverageDirectory": "test_coverage_dir",
+    "collectCoverageFrom": [
+      "src/**/*.tsx",
+      "src/**/*.ts"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.base.json"
+      }
+    }
+  },
   "dependencies": {
     "apollo-server-lambda": "^2.0.4",
     "chalk": "^2.4.1",
+    "cors": "^2.8.4",
     "graphql": "^0.13.2",
     "mongodb": "^3.1.3"
   },
